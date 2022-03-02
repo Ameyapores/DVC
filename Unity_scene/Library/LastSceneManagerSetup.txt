@@ -1,0 +1,5 @@
+sceneSetups:
+- path: Assets/SofaUnity/Scenes/Colon_simulation/Demo_v2/Patient_1/P1_Automatic.unity
+  isLoaded: 1
+  isActive: 1
+  isSubScene: 0

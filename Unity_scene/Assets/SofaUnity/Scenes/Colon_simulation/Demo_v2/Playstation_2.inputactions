@@ -1,0 +1,33 @@
+{
+    "name": "Playstation_2",
+    "maps": [
+        {
+            "name": "Movements",
+            "id": "787136a8-f47e-4f1d-93f5-d8ef0830672f",
+            "actions": [
+                {
+                    "name": "New action",
+                    "type": "Button",
+                    "id": "cf326185-26d5-43fd-8179-afac2c6c0d1e",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "2abebd97-a693-4262-8e0b-de5b22ea6de0",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "New action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

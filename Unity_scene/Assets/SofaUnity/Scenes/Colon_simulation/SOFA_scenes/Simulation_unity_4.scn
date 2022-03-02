@@ -1,0 +1,86 @@
+<Node name="root"  gravity="0 0 0"  dt="0.07" >
+  <RequiredPlugin name="SofaOpenglVisual"/>
+  <RequiredPlugin name="SofaPython" pluginName="SofaPython" />
+  <VisualStyle name="visualStyle"  displayFlags="showVisual showBehaviorModels"  />
+
+  <DefaultPipeline name="pipeline" depth="6" verbose="0"/>
+  <BruteForceDetection name="N2" />
+  <DefaultContactManager name="response" response="default" />
+  <DefaultCollisionGroupManager name="default23" />
+  <MinProximityIntersection name="Proximity" alarmDistance="2.0" contactDistance="0.001" />
+
+  <!-- ######################################################################### COLON NODE #########################################################################################-->
+
+  <Node	name="Colon">
+    <EulerImplicitSolver name="cg_odesolver" printLog="false"  rayleighStiffness="0.1" rayleighMass="0.1"  />
+    <CGLinearSolver iterations="50" name="linear solver" tolerance="1.0e-9" threshold="1.0e-9" verbose = "0" draw="0"/>
+    <MeshSTLLoader name="meshLoader" filename="../mesh/ColonSTL1.stl"/>
+    <MechanicalObject name="MechColon" template="Vec3d"/>
+    <SparseGridTopology name="SparseGridTopology"  src="@meshLoader"  n="20 20 15" />
+
+    <TetrahedronSetTopologyContainer  name="TetraContainer" position="@MechColon.position" src="@meshLoader" tags=" "/>
+    <TetrahedronSetTopologyModifier   name="Modifier" />
+    <TetrahedronSetTopologyAlgorithms name="TopoAlgo"  template="Vec3d" />
+    <TetrahedronSetGeometryAlgorithms name="GeomAlgo"  template="Vec3d" />
+    <Hexa2TetraTopologicalMapping input="@SparseGridTopology" output="@TetraContainer" />
+
+    <MeshMatrixMass massDensity="1045e-10" showGravityCenter="false" printMass= "false" topology="@TetraContainer"/>
+    <TetrahedronFEMForceField name="FEM" youngModulus="1.4e+3" poissonRatio="0.3" computeGlobalMatrix="false" method="large" topology="@TetraContainer" />
+
+    <!-- <BoxROI template="Vec3d" name="BOX ROI Force" box="-20 -210 -80  20 -110 -40" drawBoxes="true"/>
+    <ConstantForceField name= "f" indices="@BOX ROI Force.indices" force="0 0 10e2" showArrowSize="0.002" /> --> 
+
+    <Node name="Box ROI Rectum">
+      <BoxROI name="box_roi" drawBoxes="1" box="-10 110 70 10 190 100"/>
+      <PartialFixedConstraint indices="@[-1].indices" fixedDirections="1 1 1"/>
+    </Node>
+
+    <Node name="Box ROI Ascending Colon">
+        <BoxROI name="box_roi1" drawBoxes="1" box="110 0 -20 140 -110 0"/>
+        <PartialFixedConstraint indices="@[-1].indices" fixedDirections="1 1 1"/>
+    </Node>
+
+    <Node name="Box ROI Descending Colon">
+      <BoxROI name="box_roi2" drawBoxes="1" box="-110 0 -20 -140 -140 0"/>
+      <PartialFixedConstraint indices="@[-1].indices" fixedDirections="1 1 1" />
+    </Node>
+
+    <!-- <Node name="HepaticFlexurePoint">
+      <MechanicalObject name="Particles1"  position="120 -210 -20 100 -210 -40"/>
+      <UniformMass name="Mass" totalMass="1" />
+      <FixedConstraint fixAll="true"/>
+    </Node>
+
+    <Node name="SplenicFlexurePoint">
+      <MechanicalObject name="Particles2"  position="-90 -210 0 -100 -210 -30"/>
+      <UniformMass name="Mass" totalMass="1" />
+      <FixedConstraint fixAll="true"/>
+    </Node>
+
+    <BoxStiffSpringForceField  name="Hepatic Colon Spring" stiffness="10e9" factorRestLength="1" object1="@Colon" object2="@HepaticFlexurePoint" box_object1="140 -190 0 80 -160 -40" box_object2="130 -200 -10 90 -230 -50" forceOldBehavior="0" />
+    <BoxStiffSpringForceField  name="Splenic Colon Spring" stiffness="10e9" factorRestLength="1" object1="@Colon" object2="@SplenicFlexurePoint" box_object1="-80 -180 0 -120 -140 -40" box_object2="-80 -200 0 -120 -220 -40" forceOldBehavior="0" /> -->
+
+
+
+    <!--###################################################################### COLON VISUAL NODE #######################################################################################-->
+
+    <Node name="ColonVisualNode">
+      <OglModel name="ColonVisualModel" src="@../meshLoader" />
+      <BarycentricMapping  name="Visual Mapping"  input="@../MechColon"  output="@ColonVisualModel" />
+    </Node> 
+
+    <!-- ###################################################################### COLON COLLISION NODE ####################################################################################-->
+
+    <Node name="ColonCollisionNode">
+      <MeshTopology src="@../meshLoader"/>
+      <MechanicalObject src="@../meshLoader" name="CollisionObject" scale3d="1 1 1" />
+      <PointCollisionModel name="Points" contactStiffness="100"/>
+      <LineCollisionModel name="Lines" contactStiffness="100"/>
+      <TriangleCollisionModel name="Triangles" contactStiffness="100"/>
+      <BarycentricMapping  name="Mechanical Mapping" input="@../MechColon" output="@CollisionObject"/>
+    </Node>
+
+    <!-- <PythonScriptController name="IncrementalLoading" filename="controller_sofaUnity.py" classname="control"/>    -->
+  </Node>
+</Node>
+ 

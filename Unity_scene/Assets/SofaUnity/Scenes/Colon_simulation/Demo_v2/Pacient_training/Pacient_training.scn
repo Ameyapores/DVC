@@ -1,0 +1,118 @@
+<Node name="root"  gravity="0 0 0"  dt="0.005" >
+  <RequiredPlugin name="SofaOpenglVisual"/>
+  <VisualStyle name="visualStyle"  displayFlags="showVisual showBehaviorModels"  />
+
+  <DefaultPipeline name="pipeline" depth="6" verbose="0"/>
+  <BruteForceDetection name="N2" />
+  <DefaultContactManager name="response" response="FrictionContact" />
+  <LocalMinDistance name="proximity" alarmDistance="0.25" contactDistance="0.05" angleCone="0.0" />
+  <FreeMotionAnimationLoop/>
+  <LCPConstraintSolver tolerance="0.01"  maxIt="1000"/>
+
+  <!-- ######################################################################### COLON NODE #########################################################################################-->
+
+  <Node	name="Colon">
+    <EulerImplicitSolver name="cg_odesolver" printLog="false"  rayleighStiffness="1" rayleighMass="1"  />
+    <CGLinearSolver iterations="10" name="linear solver" tolerance="0.5" threshold="0.5"/>
+        <!-- <CGLinearSolver iterations="50" name="linear solver" tolerance="1.0e-9" threshold="1.0e-9" verbose = "0" draw="0"/> -->
+    <MeshObjLoader name="meshLoader" filename="./ColonSTL1_training_smooth.obj" rotation= "90 0 0"/>
+    <MechanicalObject name="MechColon" template="Vec3d"/>
+    <SparseGridTopology name="SparseGridTopology"  src="@meshLoader"  n="10 10 10" fillWeighted="1" onlyInsideCells="0"/>
+    <TetrahedronSetTopologyContainer  name="TetraContainer" position="@MechColon.position" src="@meshLoader" tags=" "/>
+    <TetrahedronSetTopologyModifier   name="Modifier" />
+    <TetrahedronSetTopologyAlgorithms name="TopoAlgo"  template="Vec3d" />
+    <TetrahedronSetGeometryAlgorithms name="GeomAlgo"  template="Vec3d" />
+    <Hexa2TetraTopologicalMapping input="@SparseGridTopology" output="@TetraContainer" />
+
+    <MeshMatrixMass massDensity="1045e-10" showGravityCenter="false" printMass= "false" topology="@TetraContainer" rayleighMass="0.1"/>
+    <TetrahedronFEMForceField name="FEM" youngModulus="1.3e+3" poissonRatio="0.3" computeGlobalMatrix="false" method="large" topology="@TetraContainer" />
+    <!-- <FastTetrahedralCorotationalForceField name="FEM" youngModulus="1.4e+3" poissonRatio="0.3" method="large" topology="@TetraContainer"/> -->
+    <UncoupledConstraintCorrection/>
+
+    
+    <!-- <Node name="Rectum fixed">
+      <BoxROI name="box_roi" drawBoxes="1" box="-30 190 50 30 210 120"/>
+      <PartialFixedConstraint indices="@[-1].indices" fixedDirections="1 1 1" />
+    </Node>
+
+    <Node name="CC">
+      <BoxROI name="box_roi" drawBoxes="1" box="-160 40 -40 -80 60 40"/>
+      <PartialFixedConstraint indices="@[-1].indices" fixedDirections="1 1 1" />
+    </Node> -->
+    
+
+    <Node name="rectum">
+        <BoxROI name="box_roi" drawBoxes="1" box="-30 110 50 30 180 120"/>
+        <RestShapeSpringsForceField name="Springs" stiffness="5000" points="@[-1].indices" recompute_indices="false" drawSpring = "true"/>
+        <!-- <SurfacePressureForceField pressure="500.0" pulseMode="false" pressureSpeed="20000.0" min="-30 110 50" max="30 210 120"/> -->
+    </Node>
+
+    <Node name="ascending">
+        <BoxROI name="box_roi" drawBoxes="1" box="110 0 -20 140 -100 0"/>
+        <RestShapeSpringsForceField name="Springs" stiffness="5000" points="@[-1].indices" recompute_indices="false" drawSpring = "true"/>
+        <!-- <SurfacePressureForceField pressure="500.0" pulseMode="false" pressureSpeed="20000.0" min="-30 110 50" max="30 210 120"/> -->
+    </Node>
+
+    <Node name="descending">
+        <BoxROI name="box_roi" drawBoxes="1" box="-110 0 -20 -140 -100 0"/>
+        <RestShapeSpringsForceField name="Springs" stiffness="5000" points="@[-1].indices" recompute_indices="false" drawSpring = "true"/>
+        <!-- <SurfacePressureForceField pressure="500.0" pulseMode="false" pressureSpeed="20000.0" min="-30 110 50" max="30 210 120"/> -->
+    </Node>
+
+     <Node name="splenic">
+        <BoxROI name="box_roi" drawBoxes="1" box="-80 -200 0 -120 -180 -40"/>
+        <RestShapeSpringsForceField name="Springs" stiffness="5000" points="@[-1].indices" recompute_indices="false" drawSpring = "true"/>
+        <!-- <SurfacePressureForceField pressure="500.0" pulseMode="false" pressureSpeed="20000.0" min="-30 110 50" max="30 210 120"/> -->
+    </Node>
+
+    <Node name="hepatic">
+        <BoxROI name="box_roi" drawBoxes="1" box="140 -200 0 80 -180 -40"/>
+        <RestShapeSpringsForceField name="Springs" stiffness="5000" points="@[-1].indices" recompute_indices="false" drawSpring = "true"/>
+        <!-- <SurfacePressureForceField pressure="500.0" pulseMode="false" pressureSpeed="20000.0" min="-30 110 50" max="30 210 120"/> -->
+    </Node>
+
+    <Node name="ColonVisualNode">
+      <MeshObjLoader name="2D_meshLoader" filename=".\ColonSTL1_training_smooth.obj" handleSeams="1" rotation= "90 0 0"/>
+      <OglModel name="ColonVisualModel" src="@2D_meshLoader" color="red"/>
+      <BarycentricMapping  name="Visual Mapping"  input="@../MechColon"  output="@ColonVisualModel" />
+    </Node> 
+
+    <Node name="ColonCollisionNode">
+      <MeshSTLLoader name="2D_meshLoader_2" filename=".\2D_Interior_train_10000.stl"/>
+      <MeshTopology src="@2D_meshLoader_2"/>
+      <MechanicalObject src="@2D_meshLoader_2" name="CollisionObject" scale3d="1 1 1" />
+      <PointCollisionModel name="Points" contactStiffness="1000"/>
+      <LineCollisionModel name="Lines" contactStiffness="1000"/>
+      <TriangleCollisionModel name="Triangles" contactStiffness="100"/>
+      <BarycentricMapping  name="Mechanical Mapping" input="@../MechColon" output="@CollisionObject"/>
+
+    </Node>
+
+    <Node name="PedStr">
+      <MeshObjLoader name="PedStrLoader" filename=".\Polyps\Pacientetrain_ped_str.obj" handleSeams="1"/>
+      <OglModel name="PedStrVisualModel" src="@PedStrLoader" color="red" />
+      <BarycentricMapping name="Polyp PedStr Visual Mapping" input="@.." output="@PedStrVisualModel" />
+    </Node>
+
+    <Node name="FlStr" tags="Visual">
+      <MeshObjLoader name="FlStrLoader" filename=".\Polyps\Pacientetrain_fl_str.obj" handleSeams="1"/>
+      <OglModel name='FlStrVisualModel' src='@FlStrLoader' color="red" />
+      <BarycentricMapping name="Polyp FlStr Visual Mapping" input="@.." output="@FlStrVisualModel" />
+    </Node>
+
+    <Node name="SesFlex" tags="Visual">
+      <MeshObjLoader name="SesFlexLoader" filename=".\Polyps\Pacientetrain_ses_flex.obj" handleSeams="1"/>
+      <OglModel name='SesFlexVisualModel' src='@SesFlexLoader' color="red" />
+      <BarycentricMapping name="Polyp SesFlex Visual Mapping" input="@.." output="@SesFlexVisualModel" />
+    </Node>
+
+    <Node name="FlFlex" tags="Visual">
+      <MeshObjLoader name="FlFlexLoader" filename=".\Polyps\Pacientetrain_fl_flex.obj" handleSeams="1"/>
+      <OglModel name='FlFlexVisualModel' src='@FlFlexLoader' color="red" />
+      <BarycentricMapping name="Polyp FlFlex Visual Mapping" input="@.." output="@FlFlexVisualModel" />
+    </Node>
+
+  </Node>
+
+</Node> 
+ 

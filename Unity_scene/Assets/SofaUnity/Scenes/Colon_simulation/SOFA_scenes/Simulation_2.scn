@@ -1,0 +1,198 @@
+<Node name="root"  gravity="0 0 0"  dt="0.1" >
+  <RequiredPlugin name="SofaOpenglVisual"/>
+  <RequiredPlugin name="SofaPython" pluginName="SofaPython" />
+  <VisualStyle name="visualStyle"  displayFlags="showVisual showBehaviorModels"  />
+
+  <DefaultPipeline name="pipeline" depth="6" verbose="0"/>
+  <BruteForceDetection name="N2" />
+  <DefaultContactManager name="response" response="FrictionContact" />
+  <LocalMinDistance name="proximity" alarmDistance="0.25" contactDistance="0.05" angleCone="0.0" />
+  <FreeMotionAnimationLoop/>
+  <LCPConstraintSolver tolerance="0.01"  maxIt="1000" maxF="1e8" displayDebug="1" displayTime="1"/>
+
+  <!-- ######################################################################### COLON NODE #########################################################################################-->
+
+  <Node	name="Colon">
+    <EulerImplicitSolver name="cg_odesolver" printLog="false"  rayleighStiffness="1" rayleighMass="1"  />
+    <CGLinearSolver iterations="25" name="linear solver" tolerance="1.0e-1" threshold="1.0e-1"/>
+        <!-- <CGLinearSolver iterations="50" name="linear solver" tolerance="1.0e-9" threshold="1.0e-9" verbose = "0" draw="0"/> -->
+    <MeshSTLLoader name="meshLoader" filename="mesh/GI_1_low_colon2.stl" rotation = "0 0 180"/>
+    <MechanicalObject name="MechColon" template="Vec3d"/>
+    <!-- <SparseGridTopology name="SparseGridTopology"  src="@meshLoader"  n="20 20 15" fillWeighted="1" onlyInsideCells="1" /> -->
+<!-- n="20 20 15" -->
+    <!-- <TetrahedronSetTopologyContainer  name="TetraContainer" position="@MechColon.position" src="@meshLoader" tags=" "/>
+    <TetrahedronSetTopologyModifier   name="Modifier" />
+    <TetrahedronSetTopologyAlgorithms name="TopoAlgo"  template="Vec3d" />
+    <TetrahedronSetGeometryAlgorithms name="GeomAlgo"  template="Vec3d" />
+    <Hexa2TetraTopologicalMapping input="@SparseGridTopology" output="@TetraContainer" /> -->
+    <!-- <RegularGrid nx="20" ny="20" nz="20" name="TetraContainer"/> -->
+    <Mesh src="@meshLoader" name='TetraContainer' />
+    <TriangleSetTopologyModifier   name="Modifier" template="Vec3d" />
+    <TriangleSetTopologyAlgorithms name="TopoAlgo"  template="Vec3d" />
+    <TriangleSetGeometryAlgorithms name="GeomAlgo" template="Vec3d" />
+    
+    <UniformMass vertexMass="1045e-10" template="Vec3d"/>
+    <!-- <MeshMatrixMass massDensity="1045e-10" showGravityCenter="false" printMass= "false" rayleighMass="0.1" topology="@TetraContainer"/> -->
+    <TriangleFEMForceField name="FEM1" youngModulus="1.4e+3" poissonRatio="0.3" method="large" topology="@TetraContainer"/>
+    <!-- <TetrahedronFEMForceField name="FEM" youngModulus="1.4e+3" poissonRatio="0.3" computeGlobalMatrix="false" method="large" topology="@TetraContainer" /> -->
+    <!-- <FastTetrahedralCorotationalForceField name="FEM" youngModulus="1.4e+3" poissonRatio="0.3" method="large" topology="@TetraContainer"/> -->
+    <UncoupledConstraintCorrection/>
+
+    <Node name="Rectum 1">
+      <MechanicalObject name="Particles1"  position="-100 150 -45"/>
+      <UniformMass name="Mass" totalMass="1" />
+      <FixedConstraint fixAll="true"/>
+    </Node>
+
+          <!-- <MechanicalObject name="Particles1"  position="-100 130 80 -100 190 80"/> -->
+
+    <Node name="Rectum 2">
+      <MechanicalObject name="Particles2"  position="130 150 -45"/>
+      <UniformMass name="Mass" totalMass="1" />
+      <FixedConstraint fixAll="true"/>
+    </Node>
+          <!-- <MechanicalObject name="Particles2"  position="100 130 80 100 190 80"/> -->
+
+    <Node name="Ascending">
+      <MechanicalObject name="Particles3"  position="-220 30 -10"/>
+      <UniformMass name="Mass" totalMass="1" />
+      <FixedConstraint fixAll="true"/>
+    </Node>
+<!-- 
+      <MechanicalObject name="Particles3"  position="-220 0 -10 -220 -140 -10"/> -->
+
+
+    <Node name="Center">
+      <MechanicalObject name="Particles4"  position="0 -40 -10"/>
+      <UniformMass name="Mass" totalMass="1" />
+      <FixedConstraint fixAll="true"/>
+    </Node>
+<!-- 
+          <MechanicalObject name="Particles4"  position="0 0 -10 0 -80 -10"/> -->
+
+    <Node name="Descending">
+      <MechanicalObject name="Particles5"  position="220 -60 -10"/>
+      <UniformMass name="Mass" totalMass="1" />
+      <FixedConstraint fixAll="true"/>
+    </Node>
+
+          <!-- <MechanicalObject name="Particles5"  position="220 0 -10 220 -140 -10"/> -->
+
+
+      <!-- <Node name="Box ROI Ascending Colon">
+        <BoxROI name="box_roi" drawBoxes="1" box="110 0 -20 140 -110 0"/>
+        <PartialFixedConstraint indices="@[-1].indices" fixedDirections="1 1 1"/>
+    </Node>
+
+    <Node name="Box ROI Descending Colon">
+      <BoxROI name="box_roi" drawBoxes="1" box="-110 0 -20 -140 -140 0"/>
+      <PartialFixedConstraint indices="@[-1].indices" fixedDirections="1 1 1" />
+    </Node> -->
+
+    <Node name="HepaticFlexurePoint">
+      <MechanicalObject name="Particles"  position="140 -270 -10"/>
+      <UniformMass name="Mass" totalMass="1" />
+      <FixedConstraint fixAll="true"/>
+    </Node>
+
+    <Node name="SplenicFlexurePoint">
+      <MechanicalObject name="Particles"  position="-140 -270 -10 "/>
+      <UniformMass name="Mass" totalMass="1" />
+      <FixedConstraint fixAll="true"/>
+    </Node>
+
+
+    <BoxStiffSpringForceField  name="Rectum 1 Colon Spring" stiffness="10e4" damping="10" factorRestLength="1" object1="@Colon" object2="@Rectum 1" box_object1="10 150 -50 20 220 -40" box_object2="-80 100 -50 -110 210 -40" forceOldBehavior="0" rayleighStiffness ="10" />
+    <BoxStiffSpringForceField  name="Rectum 2 Colon Spring" stiffness="10e4" damping="10" factorRestLength="1" object1="@Colon" object2="@Rectum 2" box_object1="10 150 -50 20 220 -40" box_object2="120 100 -50 150 210 -40" forceOldBehavior="0" rayleighStiffness ="10"/>
+    <BoxStiffSpringForceField  name="Ascending 1 Colon Spring" stiffness="10e4" damping="10" factorRestLength="1" object1="@Colon" object2="@Ascending" box_object1="-100 -10 -20 -80 60 0" box_object2="-230 -10 -20 -210 60 0" forceOldBehavior="0" rayleighStiffness ="10"/>  
+    <BoxStiffSpringForceField  name="Ascending 2 Colon Spring" stiffness="10e4" damping="10" factorRestLength="1" object1="@Colon" object2="@Center" box_object1="-100 -10 -20 -80 60 0" box_object2="-10 10 -20 10 -90 0" forceOldBehavior="0" rayleighStiffness ="10"/>  
+    <BoxStiffSpringForceField  name="Descending 1 Colon Spring" stiffness="10e4" damping="10" factorRestLength="1" object1="@Colon" object2="@Descending" box_object1="80 0 -20 100 -80 0" box_object2="210 10 -20 230 -150 0" forceOldBehavior="0" rayleighStiffness ="10"/>
+    <BoxStiffSpringForceField  name="Descending 2 Colon Spring" stiffness="10e4" damping="10" factorRestLength="1" object1="@Colon" object2="@Center" box_object1="80 0 -20 100 -80 0" box_object2="-10 10 -20 10 -90 0" forceOldBehavior="0" rayleighStiffness ="10"/>
+
+    <BoxStiffSpringForceField  name="Hepatic Colon Spring" stiffness="10e4" damping="10" factorRestLength="1" object1="@Colon" object2="@HepaticFlexurePoint" box_object1="60 -140 -20 110 -120 20" box_object2="150 -280 -20 130 -260 0" forceOldBehavior="0" rayleighStiffness ="10" />
+    <BoxStiffSpringForceField  name="Splenic Colon Spring" stiffness="10e4" damping="10" factorRestLength="1" object1="@Colon" object2="@SplenicFlexurePoint" box_object1="-80 -180 0 -120 -140 -40" box_object2="-160 -280 -20 -140 -260 0" forceOldBehavior="0" rayleighStiffness ="10" />
+<!-- 
+  stiffness="10e6" damping="10e6" "10e5"-->
+    <Node name="ColonVisualNode">
+      <OglModel name="ColonVisualModel" src="@../meshLoader" color="red"/>
+      <BarycentricMapping  name="Visual Mapping"  input="@../MechColon"  output="@ColonVisualModel" />
+    </Node> 
+
+    <Node name="ColonCollisionNode">
+      <MeshTopology src="@../meshLoader"/>
+      <MechanicalObject src="@../meshLoader" name="CollisionObject" scale3d="1 1 1" />
+      <PointCollisionModel name="Points" contactStiffness="1000"/>
+      <LineCollisionModel name="Lines" contactStiffness="1000"/>
+      <TriangleCollisionModel name="Triangles" contactStiffness="100"/>
+      <BarycentricMapping  name="Mechanical Mapping" input="@../MechColon" output="@CollisionObject"/>
+    </Node>
+
+  </Node>
+
+<!-- <Node name="Input">
+    <EulerImplicitSolver name="Implicit Euler Solver" rayleighMass="1" rayleighStiffness="0.1"/>
+    <CGLinearSolver name="Conjugate Gradient" tolerance="1e-9" threshold="1e-9" iterations="25"/>
+    <MeshSTLLoader name="meshLoader2" filename="mesh/cylMartina3.stl" scale3d="3 5 3" translation = "1 168 94"/>
+    <MechanicalObject name="DOFs"  template="Rigid3d"/>
+    <UniformMass name="Mass" totalMass="0.1"/>
+    <UncoupledConstraintCorrection/>
+
+    <Node name="VisualModel">
+      <OglModel name="InstrumentVisualModel" src="@../meshLoader2" color="red" />
+      <RigidMapping name="Visual Mapping" output="@InstrumentVisualModel" input="@../DOFs"/>
+    </Node>
+
+    <Node name="CollisionModel">
+      <MeshTopology name="InstrumentCollisionModel" src="@../meshLoader2"/>
+      <MechanicalObject name="instrumentCollisionState" src= "@../meshLoader2"/>
+      <SphereCollisionModel name="spheres" listRadius="1" contactStiffness="1000" />
+      <RigidMapping name="Mechanical Mapping" input="@../DOFs" output="@instrumentCollisionState" />
+    </Node>
+    <PythonScriptController filename="keyboardcontrol.py" classname="KeyboardControl"/>
+  </Node> -->
+
+
+
+  <!-- ############################################################################ TIP CONTROLLER #######################################################################################-->
+  <!-- <Node name="Input">
+    <PythonScriptController filename="keyboardcontrol.py" classname="KeyboardControl"/> 
+    <MechanicalObject name="DOFs" translation = "1 168 94" template="Rigid3d"/>
+
+    <Node name="VisuAvatar" activated="true">
+      <MeshObjLoader name="meshLoader_0" filename="mesh/cylMartina3.stl" scale3d="3 5 3"/>
+      <OglModel name="Visual" src="@meshLoader_0" color="red"/>  
+      <RigidMapping output="@Visual" input="@.." index="0"/>
+    </Node>
+
+    <Node name="RefModel">
+      <MeshSTLLoader name="loader" filename="mesh/cylMartina3.stl"/>
+      <MeshTopology src="@loader"/>
+      <MechanicalObject name="instrumentCollisionState" src="@loader" scale3d="3 5 3"/>
+      <RigidMapping/>
+    </Node>
+  </Node> -->
+
+  <!-- <Node name="Instrument">
+    <EulerImplicitSolver name="Implicit Euler Solver" rayleighMass="0.1" rayleighStiffness="0.1"/>
+    <CGLinearSolver name="Conjugate Gradient" tolerance="1e-9" threshold="1e-9" iterations="25"/>
+    <MeshSTLLoader name="meshLoader2" filename="mesh/cylMartina3.stl" scale3d="3 5 3" translation = "1 168 94"/>
+    <MechanicalObject name="instrumentState" template="Rigid3d"/>
+    <UniformMass name="Mass" totalMass="0.100"/>
+    <UncoupledConstraintCorrection/>
+
+    <Node name="VisualModel">
+      <OglModel name="InstrumentVisualModel" src="@../meshLoader2" color="gray" />
+      <RigidMapping name="Visual Mapping" output="@InstrumentVisualModel" input="@instrumentState"/>
+    </Node>
+
+    <Node name="CollisionModel">
+      <MeshTopology name="InstrumentCollisionModel" src="@../meshLoader2"/>
+      <MechanicalObject name="instrumentCollisionState" src="@../meshLoader2"/>
+      <SphereCollisionModel name="spheres" listRadius="1" contactStiffness="100000" />
+      <RigidMapping name="Mechanical Mapping" output="@instrumentCollisionState" input="@instrumentState"/>
+    </Node> -->
+    <!-- <VectorSpringForceField object2="@Instrument/CollisionModel/instrumentCollisionState" object1="@Input/RefModel/instrumentCollisionState" stiffness="50000000000000" viscosity="0"/> -->
+  </Node> 
+
+</Node> 
+ 

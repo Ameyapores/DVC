@@ -1,0 +1,12 @@
+
+--- NEW SESSION: 05/03/2021 14:15:34 ---
+/Colon/SparseGridTopology.dataResolution = 0 0 0
+/Colon/SparseGridTopology.drawHexahedra = 0
+/Colon/GeomAlgo.drawColorTetrahedra = 1 1 0 1
+/Colon/GeomAlgo.showTetrahedraIndices = 1
+/Colon/GeomAlgo.drawScaleTetrahedra = 0.5
+/Colon/GeomAlgo.drawTetrahedra = 0
+/Colon/GeomAlgo.drawColorTriangles = 0.298039 0.498039 0.8 1
+/Colon/GeomAlgo.drawColorEdges = 0.4 1 0.298039 1
+/Colon/GeomAlgo.showEdgeIndices = 0
+/Colon/GeomAlgo.showPointIndices = 0

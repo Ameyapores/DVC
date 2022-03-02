@@ -1,0 +1,87 @@
+<Node name="root" dt="0.05" showBoundingTree="0" gravity="0 0 0">
+    <RequiredPlugin pluginName='SofaOpenglVisual'/>
+    <VisualStyle displayFlags="showBehaviorModels showVisual" />
+    <DefaultPipeline verbose="0" />
+    <BruteForceDetection name="N2" />
+    <DefaultContactManager response="default" />
+    <MinProximityIntersection name="Proximity" alarmDistance="0.8" contactDistance="0.5" />
+
+    <Node name="Colon">
+        <EulerImplicitSolver name="cg_odesolver" printLog="false"  rayleighStiffness="0.1" rayleighMass="0.1" />
+        <CGLinearSolver iterations="25" name="linear solver" tolerance="1.0e-9" threshold="1.0e-9" />
+        <MeshSTLLoader name="loader" filename="../mesh/ColonSTL1.stl" />  <!-- scale3d= "0.4 0.4 0.4" -->
+        <MechanicalObject name="ColonState" template="Vec3d"/> 
+        <SparseGridTopology name="SparseGridTopology"  src="@loader"  n="15 15 15" />
+
+
+        <TetrahedronSetTopologyContainer  name="TetraContainer" position="@ColonState.position" src="@loader" tags=" "/>
+		<TetrahedronSetTopologyModifier   name="Modifier" />
+		<TetrahedronSetTopologyAlgorithms name="TopoAlgo"  template="Vec3d" />
+		<TetrahedronSetGeometryAlgorithms name="GeomAlgo"  template="Vec3d" />
+
+        
+        <Hexa2TetraTopologicalMapping input="@SparseGridTopology" output="@TetraContainer" />
+        <MeshMatrixMass massDensity="1.0" topology="@TetraContainer"/>
+        
+        <!-- <UniformMass vertexMass="0.05"/> -->
+
+        <Node name="Box ROI Rectum">
+            <BoxROI name="box_roi" drawBoxes="1" box="-40 110 50 40 190 130"/>
+            <PartialFixedConstraint indices="@[-1].indices" fixedDirections="1 1 1"/>
+        </Node>
+
+        <Node name="Box ROI Ascending Colon">
+            <BoxROI name="box_roi" drawBoxes="1" box="80 0 -40 160 -120 20"/>
+            <PartialFixedConstraint indices="@[-1].indices" fixedDirections="1 1 1"/>
+        </Node>
+
+
+        <Node name="Box ROI Descending Colon">
+            <BoxROI name="box_roi" drawBoxes="1" box="-80 0 -40 -160 -140 20"/>
+            <PartialFixedConstraint indices="@[-1].indices" fixedDirections="1 1 1" /> 
+        </Node>
+
+        <FastTetrahedralCorotationalForceField name="FEM" youngModulus="1300" poissonRatio="0.3" method="large" topology="@TetraContainer"/>
+       
+
+        <!-- <SparseGridTopology name="SparseGridTopology"  src="@loader"  n="20 20 20" /> -->
+        <!-- <TetrahedronSetGeometryAlgorithms /> -->
+        <!-- <HexahedronSetGeometryAlgorithms /> -->
+        <!-- <UniformMass vertexMass="0.05"/>  -->
+        <!-- <TetrahedronFEMForceField name="FEM" youngModulus="1300" poissonRatio="0.3" computeGlobalMatrix="false" method="large" /> -->
+        <!-- <HexahedronFEMForceField name="FEM" youngModulus="1300" poissonRatio="0.3" computeGlobalMatrix="false" method="large" /> -->
+        <!-- <UncoupledConstraintCorrection /> -->
+
+        <Node name="ColonCollisionNode">
+            <!-- <TriangleSetTopologyContainer  name="TriContainer" fileTopology="" tags=" " />
+			<TriangleSetTopologyModifier   name="Modifier" />
+			<TriangleSetTopologyAlgorithms name="TopoAlgo"   template="Vec3d" />
+			<TriangleSetGeometryAlgorithms name="GeomAlgo"   template="Vec3d" />
+
+            <Tetra2TriangleTopologicalMapping input="@../TetraContainer" output="@TriContainer" /> -->
+            <MeshTopology src="@../loader"/>
+            <MechanicalObject name="CollisionObject" />
+            <!-- <TriangularBendingSprings name="FEM-Bend" stiffness="600" damping="1.0" /> -->
+            <TriangleCollisionModel />
+            <BarycentricMapping  name="Mechanical Mapping" input="@../ColonState" output="@CollisionObject"/>
+
+            <!-- <MeshTopology src="@../loader"/>
+            <MechanicalObject src="@../loader" name="CollisionObject"/>
+            <PointCollisionModel name="Points" contactStiffness="10"/>
+            <LineCollisionModel name="Lines" contactStiffness="10"/>
+            <TriangleCollisionModel name="Triangles" contactStiffness="10"/>
+            <BarycentricMapping  name="Mechanical Mapping" input="@../ColonState" output="@CollisionObject"/>  -->
+        </Node>
+
+        <Node name="ColonVisualNode">
+            <OglModel name="ColonVisualModel"  color="red" src="@../loader"/>
+            <BarycentricMapping  name="Visual Mapping"  input="@../ColonState"  output="@ColonVisualModel" /> 
+            <!-- <IdentityMapping input="@../../ColonState" output="@ColonVisualModel" /> -->
+        </Node>  
+            
+        
+
+    </Node>
+
+</Node>
+
