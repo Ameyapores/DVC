@@ -7,6 +7,7 @@ This is the codebase for colonoscopy navigation using end-to-end deep visuomotor
 - mlagents 0.16.1
 - tensorflow 2.3.0
 - tensorboard 2.7.0
+- SofaAPAPI-Unity3D Plugin v1.1 (for deformable behaviour of the colon)
 
 ## How to run
 
