@@ -67,3 +67,6 @@ The training can be visualised using tensorboard
 cd ml-agents-release_2
 tensorboard --logdir summaries --port 6006
 ```
+
+## Network architecture
+<img src="images/conv.png"> 
