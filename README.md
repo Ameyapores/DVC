@@ -1,6 +1,8 @@
 # DVC
 This is the codebase for colonoscopy navigation using end-to-end deep visuomotor control. This repository contains the Unity scene used to implement autonomous control for colonoscopy. 
 
+Find the [paper](http://arxiv.org/abs/2206.15086)
+
 <img src="images/video.gif" width="300"> 
 
 ## Prerequisites
@@ -8,6 +10,10 @@ This is the codebase for colonoscopy navigation using end-to-end deep visuomotor
 - tensorflow 2.3.0
 - tensorboard 2.7.0
 - SofaAPAPI-Unity3D Plugin v1.1 (for deformable behaviour of the colon)
+- mlagents-envs 0.26.0
+- gym-unity 0.26.0
+- gym 0.19.0
+- stable-baselines3 1.3.0
 
 ## How to run
 
