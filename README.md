@@ -5,7 +5,7 @@ Find the [paper](http://arxiv.org/abs/2206.15086)
 
 <img src="images/video.gif" width="300"> 
 
-## Prerequisites
+## Prerequisites/Packages
 - mlagents 0.16.1
 - tensorflow 2.3.0
 - tensorboard 2.7.0
