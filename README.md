@@ -9,7 +9,7 @@ Find the [paper](http://arxiv.org/abs/2206.15086)
 - mlagents 0.16.1
 - tensorflow 2.3.0
 - tensorboard 2.7.0
-- SofaAPAPI-Unity3D Plugin v1.1 (for deformable behaviour of the colon)
+- [SofaAPAPI-Unity3D Plugin v1.1](https://infinytech3d.com/sapapi-unity3d/) (for deformable behaviour of the colon)
 - mlagents-envs 0.26.0
 - gym-unity 0.26.0
 - gym 0.19.0
