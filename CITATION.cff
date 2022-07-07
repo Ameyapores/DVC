@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite it as below."
+authors:
+- family-names: "Pore"
+  given-names: "Ameya"
+- family-names: "Finocchiaro"
+  given-names: "Martina"
+- family-names: "Dall'Alba"
+  given-names: "Diego"
+- family-names: "Hernansanz"
+  given-names: "Albert"
+- family-names: "Ciuti"
+  given-names: "Gastone"
+- family-names: "Arezzo"
+  given-names: "Alberto"
+- family-names: "Menciassi"
+  given-names: "Arianna"
+- family-names: "Casals"
+  given-names: "Alicia"
+- family-names: "Fiorini"
+  given-names: "Paolo"
+title: "Colonoscopy Navigation using End-to-End Deep Visuomotor Control: A User Study"
+# doi: 10.5281/zenodo.1234
+date-released: 2022-07-01
+url: "https://arxiv.org/abs/2206.15086"
